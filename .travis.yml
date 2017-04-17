@@ -3,8 +3,7 @@ dist: trusty
 
 language: cpp
 compiler:
-  - clang
-
+- clang
 git:
   depth: 1
 
@@ -19,27 +18,52 @@ before_install:
   - git config user.email "travis@build.bot" && git config user.name "Travis CI"
   - git tag -a -m "Travis build" init
   - export CC=clang-3.9 CXX=clang++-3.9
-
 install:
   - mysql -uroot -e 'create database test_mysql;'
   - mkdir bin
   - cd bin
-  - cmake ../ -DWITH_WARNINGS=1 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSCRIPTS="dynamic" -DSERVERS=1 -DNOJEM=1 -DWITH_DYNAMIC_LINKING=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_INSTALL_PREFIX=check_install
+  - cmake ../ -DWITH_WARNINGS=1 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSERVERS=1 -DNOJEM=1 -CMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Werror" DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_INSTALL_PREFIX=trinitycore
   - cd ..
   - chmod +x contrib/check_updates.sh
 
 script:
-  - $CXX --version
+  - "$CXX --version"
   - mysql -uroot < sql/create/create_mysql.sql
   - mysql -utrinity -ptrinity auth < sql/base/auth_database.sql
-  - ./contrib/check_updates.sh auth 3.3.5 auth
+  - "./contrib/check_updates.sh auth 3.3.5 auth"
   - mysql -utrinity -ptrinity characters < sql/base/characters_database.sql
-  - ./contrib/check_updates.sh characters 3.3.5 characters
+  - "./contrib/check_updates.sh characters 3.3.5 characters"
   - mysql -utrinity -ptrinity world < sql/base/dev/world_database.sql
   - cat sql/updates/world/3.3.5/*.sql | mysql -utrinity -ptrinity world
   - mysql -uroot < sql/create/drop_mysql.sql
   - cd bin
   - make -j 8 -k && make install
-  - cd check_install/bin
-  - ./authserver --version
-  - ./worldserver --version
+  - cd trinitycore/bin
+  - "./authserver --version"
+  - "./worldserver --version"
+  - tar czf ../trinitycore-`cat TRINITYCORE_NAMI_VERSION`-r`cat TRINITYCORE_NAMI_REVISION`.tar.gz trinitycore
+
+before_deploy:
+  - git config --global user.email "builds@travis-ci.com"
+  - git config --global user.name "Travis CI"
+  - git checkout $TRAVIS_BRANCH
+  - echo $((`cat TRINITYCORE_NAMI_REVISION` + 1)) > TRINITYCORE_NAMI_REVISION
+  - git add TRINITYCORE_NAMI_REVISION
+  - git commit -m "TravisCI: Increase revision"
+  - git push -q https://$GH_TOKEN@github.com/dgonzalezruiz/TrinityCore.git
+  - export GIT_TAG=`cat TRINITYCORE_NAMI_VERSION`-r`cat TRINITYCORE_NAMI_REVISION`
+  - git tag $GIT_TAG -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER in branch $TRAVIS_BRANCH"
+  - git push -q https://$GH_TOKEN@github.com/dgonzalezruiz/TrinityCore.git --tags
+deploy:
+  provider: releases
+  api_key:
+    secure: XwuUL8WDxq9geltOpOigwR4/ZMrE+mHWIDs7zgnEgmXzHMnxNBwd8gDXYEAZoj4/XEJS0q5K8sXyOYIGU11yCvgl2+giCRd5v75Sj4IPzkzZgYPA4NkvaUh1jrDiTR8bEyYVmNLAXiTVlD7A6Ql1DCulPhv0pfTZT49h2QiESkXB4xZ2elUssQLDZXWmV4lMB6FWN7a9yBPMQJiGazxTiyMyF6lwWm9miLVuykLsXYsbhaBbbCplGhZiF9zTeS9CRlaHPjtzxP2X4zvzuAvfm225vlaRR6arF7k2gzkYl96Z83sP627exRX9Fy5GkhB2ebZmWT4unnAKU/h2ay566n/I7aw9DwpxByNi0XOr4kwfYVPxPqzIUC/sywYtKMwKAT1S4KmeC/K48kPBYrdFQxRoTJ2KrA+eThll6V1qgE3r6qh+PlDZ2z12f2+B1YCDekF2bo+gPdhzEK3ZXFYLUuYFBPP1kRenK4rXJs4EObuUtSnBN68x8lntjMzZHqYJpBsd+QqVHPF7WdN9dZRKJPTMMk7CYsk6lnfAHo4OgWMo++2jMa4RRcUkAzYBc9Gubd7G4Mu6R6vHtVUhMxO+v1pmAYrUaQZB3cEkjFT7io09dPqZ5tSlGLQy0nFKzt1BwYx0oimDsJaycJJ3nNI+AQQROz4LxJ3TAp/1IyuEw90=
+  file: trinitycore*.tar.gz
+  skip_cleanup: true
+  file_glob: true
+  on:
+    repo: dgonzalezruiz/TrinityCore
+
+env:
+  global:
+    secure: PN6ONpPkE47+M9B9ON+wqtmeYDz/EG8LAvw4P1TCS/0DOZD6GI6MZyKGkJFxn2NMyMKfRSo25C7M3jZ81lilZ29HQy5zhgaFnI8gfLlgi+zmaKgw0BfoawsiebJYj4ajspPfKB6Ph/lYT99wkcuYkyvJ+spJxX9rQnODp4Z+rWyhjtz51lGP9ymrCgIJLKDptJtHLY/e8mwcXDIDUPn9H6wS+3xjDMhwOoZp/3ZA6ueEcU4aKGBxfnHiElIfU73DPOext++fJIbs6Dc9OyZg89RphOAA3R6EwW3d7FUnFy5eLzi9DoYEAYqQfDm/iAahkMjUKsIHzmQ3AtfcEQX4FBBd/hKkgtD5eeghN5fZzhJ8PRnjDjYIQEd+5ZnU9J7X7s8PoG6EcBqafJuP0DLhYGRzCqiOVVJBNsxiyQh1BDOsAB9RZBLfwm/JvnSZqsGDhpWANNvhQpvSzF4YGbBY24mNFas7LvPc3k/3zlfE45/Rew1oQgstXhvFCl968MYb3bi2o5Fc4xniU7w0m1LNA97Tu2kT+gbTP+EQdlczimhZy5AN15oOYrRuoBVGtoWRuDMJ9OfCZhG6aAAM5USB5Vy8Pq/g4UfbwPz7tkMYJbmz8WQ4IPugZd9tWDYl01OAVtiKCG6w6I2T1rqXVMRvfGa/66Uhouvg+n0182Lewt8=
