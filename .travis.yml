@@ -18,7 +18,7 @@ before_install:
   - export CC=clang-3.9 CXX=clang++-3.9
 install:
   - mysql -uroot -e 'create database test_mysql;'
-  - mkdir bin
+  - mkdir -p bin
   - cd bin
   - echo "there are `nproc` processors available"
   - cmake ../ -DWITH_WARNINGS=1 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSERVERS=1 -DNOJEM=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_INSTALL_PREFIX=trinitycore
