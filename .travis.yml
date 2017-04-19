@@ -47,7 +47,7 @@ script:
   - git checkout $TRAVIS_BRANCH
   - echo $((`cat TRINITYCORE_NAMI_REVISION` + 1)) > TRINITYCORE_NAMI_REVISION
   - git add TRINITYCORE_NAMI_REVISION
-  - git commit -m "TravisCI: Increase revision"
+  - git commit -m "[TravisCI] Increase Revision"
   - git push -q https://$GH_TOKEN@github.com/dgonzalezruiz/TrinityCore.git 
 
 before_deploy:
