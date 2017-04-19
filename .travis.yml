@@ -69,7 +69,7 @@ deploy:
   on: 
     repo: dgonzalezruiz/TrinityCore
     tags: false
-    all_branches: true
+    branch: 3.3.5
 
 
 notifications:
