@@ -30,7 +30,7 @@ install:
 
 script:
   - "$CXX --version"
-  - git fetch --tags
+
   - mysql -uroot < sql/create/create_mysql.sql
   - mysql -utrinity -ptrinity auth < sql/base/auth_database.sql
   - "./contrib/check_updates.sh auth 3.3.5 auth"
@@ -47,17 +47,14 @@ script:
   - cat test
   - cd ../..
   - tar czf ../trinitycore-`cat TRINITYCORE_NAMI_VERSION`-r`cat TRINITYCORE_NAMI_REVISION`.tar.gz trinitycore
+
+before_deploy:
   - git config --global user.email "builds@travis-ci.com"
   - git config --global user.name "Travis CI"
   - git checkout $TRAVIS_BRANCH
-
-before_deploy:
-  - echo $((`cat TRINITYCORE_NAMI_REVISION` + 1)) > TRINITYCORE_NAMI_REVISION
-  - git add TRINITYCORE_NAMI_REVISION
-  - git commit -m "[TravisCI] Increase Revision"
-  - git push -q https://$GH_TOKEN@github.com/dgonzalezruiz/TrinityCore.git 
+  - git fetch --tags
   - export GIT_TAG=`cat ../TRINITYCORE_NAMI_VERSION`-r`cat ../TRINITYCORE_NAMI_REVISION`
-  - if git tag $GIT_TAG -a -m "$msg" 2>/dev/null; then git tag $GIT_TAG -a -m "Tag Generated from TravisCI for build $TRAVIS_BUILD_NUMBER" ; git push -q https://$GH_TOKEN@github.com/dgonzalezruiz/TrinityCore.git --tags ; else echo Tag already exists! ; fi
+  - if git tag $GIT_TAG -a -m "$msg" 2>/dev/null; then echo $((`cat TRINITYCORE_NAMI_REVISION` + 1)) > TRINITYCORE_NAMI_REVISION; git add TRINITYCORE_NAMI_REVISION; git commit -m "[TravisCI] Increase Revision file [ci skip]" ; git tag $GIT_TAG -a -m "Tag Generated from TravisCI for build $TRAVIS_BUILD_NUMBER" ; git push -q https://$GH_TOKEN@github.com/dgonzalezruiz/TrinityCore.git --follow-tags ; else echo Tag already exists! ; fi
 
 deploy:
   provider: releases
