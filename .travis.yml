@@ -50,7 +50,8 @@ script:
   - mv trinitycore-*.tar.gz ../
 
 before_deploy:
-  - ls -lahrtR
+  - ls -lahrtR /
+  - cd ..
   - ls trinitycore-*.tar.gz
   - git config --global user.email "builds@travis-ci.com"
   - git config --global user.name "Travis CI"
