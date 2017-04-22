@@ -46,11 +46,12 @@ script:
   - cd trinitycore/bin
   - cat test
   - cd ../..
+  - pwd[T
   - tar vczf trinitycore-`cat ../TRINITYCORE_NAMI_VERSION`-r`cat ../TRINITYCORE_NAMI_REVISION`.tar.gz trinitycore
   - mv trinitycore-*.tar.gz ../
 
 before_deploy:
-  - ls -lahrtR /
+  - pwd
   - cd ..
   - ls trinitycore-*.tar.gz
   - git config --global user.email "builds@travis-ci.com"
