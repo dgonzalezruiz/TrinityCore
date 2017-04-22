@@ -46,7 +46,7 @@ script:
   - cd trinitycore/bin
   - cat test
   - cd ../..
-  - echo $((`cat ..TINITYCORE_NAMI_REVISION` + 1)) > ../TRINITYCORE_NAMI_REVISION
+  - echo $((`cat ../TRINITYCORE_NAMI_REVISION` + 1)) > ../TRINITYCORE_NAMI_REVISION
   - tar vczf trinitycore-`cat ../TRINITYCORE_NAMI_VERSION`-r`cat ../TRINITYCORE_NAMI_REVISION`.tar.gz trinitycore
   - mv trinitycore-*.tar.gz ../
   - cd ../
