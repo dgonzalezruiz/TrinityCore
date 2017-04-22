@@ -74,7 +74,7 @@ deploy:
   skip_cleanup: true
   on: 
     repo: dgonzalezruiz/TrinityCore
-    tags: false
+    tags: true
     branch: 3.3.5
 
 
