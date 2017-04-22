@@ -46,7 +46,7 @@ script:
   - cd trinitycore/bin
   - cat test
   - cd ../..
-  - pwd[T
+  - pwd
   - tar vczf trinitycore-`cat ../TRINITYCORE_NAMI_VERSION`-r`cat ../TRINITYCORE_NAMI_REVISION`.tar.gz trinitycore
   - mv trinitycore-*.tar.gz ../
 
