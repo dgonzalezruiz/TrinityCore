@@ -46,8 +46,10 @@ script:
   - cd trinitycore/bin
   - cat test
   - cd ../..
+  - echo $((`cat ..TINITYCORE_NAMI_REVISION` + 1)) > ../TRINITYCORE_NAMI_REVISION
   - tar vczf trinitycore-`cat ../TRINITYCORE_NAMI_VERSION`-r`cat ../TRINITYCORE_NAMI_REVISION`.tar.gz trinitycore
-  - cd ..
+  - mv trinitycore-*.tar.gz ../
+  - cd ../
 
 before_deploy:
  
@@ -56,7 +58,6 @@ before_deploy:
   - git checkout $TRAVIS_BRANCH
   - git fetch --tags
   - git tag
-  - echo $((`cat .TINITYCORE_NAMI_REVISION` + 1)) > TRINITYCORE_NAMI_REVISION
   - export GIT_TAG=`cat TRINITYCORE_NAMI_VERSION`-r`cat TRINITYCORE_NAMI_REVISION`
   - echo $GIT_TAG
   - cat TRINITYCORE_NAMI_REVISION
@@ -67,7 +68,7 @@ deploy:
   api_key:
     secure: XwuUL8WDxq9geltOpOigwR4/ZMrE+mHWIDs7zgnEgmXzHMnxNBwd8gDXYEAZoj4/XEJS0q5K8sXyOYIGU11yCvgl2+giCRd5v75Sj4IPzkzZgYPA4NkvaUh1jrDiTR8bEyYVmNLAXiTVlD7A6Ql1DCulPhv0pfTZT49h2QiESkXB4xZ2elUssQLDZXWmV4lMB6FWN7a9yBPMQJiGazxTiyMyF6lwWm9miLVuykLsXYsbhaBbbCplGhZiF9zTeS9CRlaHPjtzxP2X4zvzuAvfm225vlaRR6arF7k2gzkYl96Z83sP627exRX9Fy5GkhB2ebZmWT4unnAKU/h2ay566n/I7aw9DwpxByNi0XOr4kwfYVPxPqzIUC/sywYtKMwKAT1S4KmeC/K48kPBYrdFQxRoTJ2KrA+eThll6V1qgE3r6qh+PlDZ2z12f2+B1YCDekF2bo+gPdhzEK3ZXFYLUuYFBPP1kRenK4rXJs4EObuUtSnBN68x8lntjMzZHqYJpBsd+QqVHPF7WdN9dZRKJPTMMk7CYsk6lnfAHo4OgWMo++2jMa4RRcUkAzYBc9Gubd7G4Mu6R6vHtVUhMxO+v1pmAYrUaQZB3cEkjFT7io09dPqZ5tSlGLQy0nFKzt1BwYx0oimDsJaycJJ3nNI+AQQROz4LxJ3TAp/1IyuEw90=
   file_glob: true
-  file: bin/trinitycore-*.tar.gz
+  file: trinitycore-*.tar.gz
   skip_cleanup: true
   on: 
     repo: dgonzalezruiz/TrinityCore
