@@ -62,6 +62,8 @@ before_deploy:
   - echo $GIT_TAG
   - cat TRINITYCORE_NAMI_REVISION
   - if git tag $GIT_TAG -a -m "$msg" 2>/dev/null; then git add TRINITYCORE_NAMI_REVISION; git commit -m "[TravisCI] Increase Revision file [ci skip]" ; git tag $GIT_TAG -a -m "Tag Generated from TravisCI for build $TRAVIS_BUILD_NUMBER" ; git push -q https://$GH_TOKEN@github.com/dgonzalezruiz/TrinityCore.git --follow-tags ; else echo Tag already exists! ; fi
+  - ls trinitycore-*.tar.gz
+  - pwd
 
 deploy:
   provider: releases
