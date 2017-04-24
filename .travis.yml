@@ -46,7 +46,7 @@ script:
   - cd trinitycore/bin
   - cat test
   - cd ../..
-  - echo $((`cat ../TRINITYCORE_NAMI_REVISION` + 1)) > ../TRINITYCORE_NAMI_REVISION
+  - echo $((`cat ../TRINITYCORE_NAMI_REVISION` + 2)) > ../TRINITYCORE_NAMI_REVISION
   - tar vczf trinitycore-`cat ../TRINITYCORE_NAMI_VERSION`-r`cat ../TRINITYCORE_NAMI_REVISION`.tar.gz trinitycore
   - mv trinitycore-*.tar.gz ../
   - cd ../
@@ -54,6 +54,7 @@ script:
   - git config --global user.name "Travis CI"
   - git fetch --tags
   - git branch | grep \* | cut -d ' ' -f2
+  - git checkout $TRAVIS_BRANCH
   - export GIT_TAG=`cat TRINITYCORE_NAMI_VERSION`-r`cat TRINITYCORE_NAMI_REVISION`
 
   - if git tag $GIT_TAG -a -m "$msg" 2>/dev/null; then git add TRINITYCORE_NAMI_REVISION; git commit -m "[TravisCI] Increase Revision file [ci skip]" ; git tag $GIT_TAG -a -m "Tag Generated from TravisCI for build $TRAVIS_BUILD_NUMBER" ; git push -q https://$GH_TOKEN@github.com/dgonzalezruiz/TrinityCore.git --follow-tags ; else echo Tag already exists! ; fi
